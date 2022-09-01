@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1" />
+    <title>mdview</title>
+    <meta name='description' content='markdown viewer'>
+    <meta name="author" content="ahuigo">
+</head>
+
+<body class="layout-documentation page-layout">
+    <div>
+        <div class="pure-menu pure-menu-horizontal" style=" background: #363636; ">
+            <a href="#" class="pure-menu-heading pure-menu-link"><strong>AHUIGO'S NOTES</STRONG></a>
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item"><a class="is-primary" href="/">🏠 Home</a></li>
+                <li class="pure-menu-item"><a class="is-primary" href="/a">📂 Archive</a></li>
+                <li class="pure-menu-item"><a class="is-primary" href="/readme">📖 Readme</a></li>
+                <li class="pure-menu-item"><a class="is-primary" href="//github.com/ahuigo">🐙 Github</a></li>
+                <li class="pure-menu-item"><a class="is-primary" href="/atom.xml">📶 Rss</a></li>
+                <li class="pure-menu-item"><a class="is-primary" href="//ahuigo.github.io/local-jsfiddle/fiddle.html">✏️ Fiddle</a></li>
+                <li class="pure-menu-item"><a class="is-primary" href="https://codepen.io/">✏️ Codepen</a></li>
+            </ul>
+        </div>
+
+        <div id="app">
+            <!-- imgview -->
+            <div :id="'imgview'" v-if="imgsrc" @click="imgsrc=null">
+                <div class="popup-back"></div>
+                <div class="img-wrapper"><img :src="imgsrc"></div>
+            </div>
+            <!-- left menu -->
+            <div :class="{left:true, 'active':showMenu}" >
+                <button class="button is-primary menu-toggle" :class="{a:true}" @click="showMenu=!showMenu">
+                        <template v-if="showMenu"> Close </template>
+                        <template v-else>Open</template>
+                </button>
+                <tree-folder :nodes="nodes" :class="{'active':showMenu}" :show="show"></tree-folder>
+            </div>
+            <div class="middle" v-on="showMenu?{click:r=>showMenu=false}:{}">
+                <router-view></router-view>
+                <div class="hr"></div>
+                <div class="share" style="display:flex;justify-content:space-between">
+                    <div>
+                        <h4>分享文章</h4>
+                        <div>
+                            <span @click="openShare('twitter', this)" class="icon twitter-icon"> 
+                                twitter
+                            </span>
+                            <span @click="openShare('weibo')" class="icon weibo-icon">微博 </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hr"></div>
+                <div id="disqus_thread">
+                    <button id="show-comments" class="button is-primary" onclick="disqus();return false;">Load Discus</button>
+                </div>
+            </div>
+            <div class="right">
+                <div id="search" class="pure-form">
+                    <fieldset>
+                    <input id="search_q" placeholder="Google" @keyup.enter="searchBlog($('#search_q').value)">
+                    <button @click="searchBlog($('#search_q').value)" class="pure-button pure-button-primary">搜索</button>
+                    </fieldset>
+                </div>
+                <div id="toc"></div>
+            </div>
+        </div>
+        <button class="button is-primary" onclick="window.scroll(0, 10)" id="up">Up</button>
+        <button class="button is-primary" onclick="window.scrollTo(0,document.body.scrollHeight)" id="down">Down</button>
+    </div>
+    <template id="tree-folder">
+        <ul class="pure-menu-list" v-if="show">
+            <li class="pure-menu-item" v-for="(file,index) in nodes" :key="file.path">
+                <a v-if="file.type==='dir'" :type="file.type" @click="openFolder(file)" class="folder">{{file.name}}
+                </a>
+                <router-link v-else :type="file.type" class="file" :to="'/b'+file.path.slice(4,-3)">{{file.name.slice(0,-3)}} </router-link>
+                <tree-folder v-if="file.nodes" :show="file.show" :nodes="file.nodes"></tree-folder>
+            </li>
+        </ul>
+    </template>
+    <template id="md">
+        <div id="content" v-html="marked(md)"></div>
+    </template>
+    <script src="/assets/vue.min.js" type="application/javascript"></script>
+    <script src="/assets/vue-router.min.js" type="application/javascript"></script>
+    <link href="/assets/monokai-sublime.min.css" rel="stylesheet">
+    <script src="/assets/highlight.min.js"></script>
+    <link href="/assets/katex.min.css" rel="stylesheet">
+    <script src="/assets/katex.min.js"></script>
+    <link href="/assets/purecss@2.0.3.css" rel="stylesheet" >
+    <link href="/assets/main.css" rel="stylesheet">
+    <!-- <script src="/assets/marked.js"></script> -->
+    <script type="module" src="/assets/mdview.js"></script>
+</body>
+</html>
