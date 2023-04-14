@@ -1,32 +1,22 @@
 /** @jsx h */
-import { createContext, h } from "preact";
-import { Router } from "https://esm.sh/preact-router@4.1.0";
-import * as React from "preact/hooks";
-import DirTree from "./DirTree.tsx";
-// import Hi from "http://m:4500/hi.tsx?14";
+import { h } from "preact";
+import useFetch from "$/lib/useFetch.ts";
+// import Hi from "http://m:4502/hi.tsx?ver=7";
+// import * as React from "preact/hooks";
 
-function ShowMarkdown({ path }: { path: string }) {
-  return <div>island markdown:{path}</div>;
-}
+export default function ({ path }: { path: string }) {
+  const [text, isOk] = useFetch<string>(
+    "/api/joke?path=advance/global-variable.md",
+    { initValue: "", dataType: "text" },
+  );
 
-export default function () {
+  if (!isOk) return <div>loading....</div>;
+
   return (
-    <div class="p-4 mx-auto max-w-screen-md flex">
-      <div class="bg-blue-500">
-        <div>
-          <nav>
-            <a href="/api/joke">joke</a>
-            <a href="/p/md1">md1</a>
-            <a href="/p/md2">md1</a>
-          </nav>
-        </div>
-        <DirTree path="." />
-      </div>
-      <div class="flex-1 bg-gray-100">
-        <Router>
-          <ShowMarkdown path="/p/:path*" />
-        </Router>
-      </div>
+    <div class="flex-1 bg-gray-100">
+      {/* <Hi name="ahuigo" /> */}
+      <div>island markdown:{path}</div>
+      <div>island markdown:<pre class="border-2">{text}</pre></div>
     </div>
   );
 }
